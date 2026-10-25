@@ -1,18 +1,18 @@
 ---
 name: ship-cases
-description: Recipe 3 of the strands-ship power. Build and review the human-labelled gold set (cases.jsonl) the measurement gate needs - at least 30 cases, 8 emergencies, 10 in Tamil, 3 job types, every case signed off by a named person. Use when the user says "label cases", "build cases", "add cases", "review the cases", or "sign off".
+description: Recipe 4 of the strands-ship power. Build and review the human-labelled gold set (cases.jsonl) the measurement gate needs - at least 30 cases, 8 red-flag (hand-off) cases, 10 in Tamil (or your second language), 3 user groups, every case signed off by a named person. Use when the user says "label cases", "build cases", "add cases", "review the cases", or "sign off".
 ---
-# Recipe 3: label the cases
+# Recipe 4: label the cases
 
-`cases.jsonl` holds one case per line: `id, lang, job, text, temp_c, rh, intensity, full_sun, lat, lon, expected {risk_level, escalation}, signed_off_by, signed_off_on`. `escalation` is `none`, `care` (stop work, get checked) or `emergency` (call 108).
+`cases.jsonl` holds one case per line: `id, lang, job (the user group), text, expected {escalation, must_include}, signed_off_by, signed_off_on`, plus any fields your agent needs. `escalation` is `none`, `care` (get checked / ask a person soon) or `emergency` (hand off now: 108, a helpline, a pharmacist). `must_include` lists facts a correct answer must contain. The HeatSafe example adds `temp_c, rh, intensity, full_sun` and `expected.risk_level`.
 
 ## Step 1: see what is there
-`ss cases check` then `ss cases show`. The 31 starter cases cover 8 job types, 8 emergencies, 5 care cases and 11 Tamil cases. Their risk labels were computed from the OSHA bands by the power author: **they are drafts, not ground truth.**
+`ss cases check` then `ss cases show`. The generic starter has 3 example lines with EDIT ME (check refuses them until replaced); the HeatSafe example ships 31 draft cases. **Starter labels are drafts, not ground truth.**
 
 ## Step 2: make them real
-- Replace at least half of the starter texts with how the user's worker group actually talks (ask a worker, a supervisor or an NGO). Keep the Tamil cases in natural spoken Tamil, not translated English.
+- Write cases from how the user group actually talks (from the five people in IDEA.md). Keep Tamil cases in natural spoken Tamil, not translated English.
 - Add adversarial cases: symptoms described indirectly ("he keeps asking what day it is"), negations ("no headache"), mixed Tamil-English, a case that looks like an emergency but is not.
-- For every case, a person checks `expected.risk_level` against the NWS heat index chart and `expected.escalation` against the NIOSH symptom list in `agent/data/guidance.json`.
+- For every case, a person checks each label against the sources in `agent/data/guidance.json`.
 - Run `ss cases check` after edits (the hook reminds you). Fix every ERROR and BELOW MINIMUM line.
 
 ## Step 3: sign off

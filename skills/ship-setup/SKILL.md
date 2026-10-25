@@ -13,10 +13,10 @@ The setup script ships inside the installed power at `~/.kiro/powers/installed/s
 
 ## Step 2: install (once per machine, 2-5 minutes)
 `python3 ~/.kiro/powers/installed/strands-ship/skills/ship-setup/scripts/ship.py setup`
-It creates `~/.strands-ship/` with a venv and pinned Strands Agents 1.62.0, Strands Evals 1.7.0, boto3 and Playwright, copies the kit, writes the launcher `~/.strands-ship/bin/ss`, and downloads headless Chromium for the video. It must end with `SETUP OK`. Safe to re-run; re-running after a power update refreshes the kit.
+It creates `~/.strands-ship/` with a venv and pinned Strands Agents 1.62.0, Strands Agents Tools 0.8.10, Strands Evals 1.7.0, Strands harness 0.3.2, Strands Shell 0.5.0, boto3 and Playwright, copies the kit, writes the launcher `~/.strands-ship/bin/ss`, and downloads headless Chromium for the video. It must end with `SETUP OK`. Safe to re-run; re-running after a power update refreshes the kit.
 
 ## Step 3: the project folder
-In the project folder (an empty folder is fine): `~/.strands-ship/bin/ss init` (default path HeatSafe Shift; use `--path padippu|marundhu|floodready` only after recipe 1 picked another path). It never overwrites a file; show the kept list. It copies `agent/`, `cases.jsonl` (31 starter cases, unsigned), `ship_kit/` (Apache-2.0, so the repo runs without the power), `requirements.txt`, `video.json`, `FAILURES.md`, `.kiro/steering/`, `.kiro/hooks/strands-ship.json`, `.kiro/agents/ship-builder.json`.
+In the project folder (an empty folder is fine): `~/.strands-ship/bin/ss init`. It copies a **generic starter** (a working planner -> critic graph with a red-flag hook, ready for your own idea), `cases.jsonl` (example lines to replace), `ship_kit/` (Apache-2.0, so the repo runs without the power), `requirements.txt`, `video.json`, `FAILURES.md`, `.kiro/steering/`, `.kiro/hooks/strands-ship.json`, `.kiro/agents/ship-builder.json`. It never overwrites a file; show the kept list. To study a finished agent first, run `ss init --example heatsafe` in a separate folder.
 If the folder is not a git repo: `git init`. Keep the GitHub repo **private until the window opens (28 Oct 2026)**; the agent must not be published before.
 
 ## Step 4: check Bedrock
@@ -28,4 +28,4 @@ If the folder is not a git repo: `git init`. Keep the GitHub repo **private unti
 `ss bedrock` prints `Bedrock OK` and `Translate OK`. Then tell the user:
 1. Start a **new chat session** in this folder: Kiro loads a project's hooks and agents only when a session starts, and runs no hooks in an untrusted folder ("Restricted Mode": click Manage, then Trust). The hooks are reminders only.
 2. Complete the required Builder Center workshop "Building AI Agents with Strands SDK: From Simple Loops to Multi-Agent Swarms" inside the window (28 Oct - 4 Nov). Without it the entry does not qualify.
-3. Next: say "pick my idea".
+3. Next: say "brainstorm". `ss blocks` shows the Strands toolbox any time.

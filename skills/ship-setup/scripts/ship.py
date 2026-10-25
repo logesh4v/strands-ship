@@ -80,7 +80,7 @@ def setup(browser: bool = True) -> int:
         subprocess.run([exe, "-m", "venv", str(venv)], check=True)
     else:
         print("[1/5] venv exists")
-    print("[2/5] pinned packages (Strands Agents SDK, Strands Evals, boto3, Playwright)")
+    print("[2/5] pinned packages (Strands Agents SDK + tools, Strands Evals, Strands harness, Strands Shell, boto3, Playwright)")
     subprocess.run([str(py), "-m", "pip", "install", "-q", "--disable-pip-version-check", "-r", str(REQ)], check=True)
     print("[3/5] kit")
     shutil.rmtree(HOME / "kit", ignore_errors=True)
@@ -88,14 +88,16 @@ def setup(browser: bool = True) -> int:
     print("[4/5] launcher ~/.strands-ship/bin/ss")
     (HOME / "bin").mkdir(exist_ok=True)
     ss = HOME / "bin" / "ss"
-    ss.write_text(f'#!/bin/sh\nPYTHONPATH="{HOME / "kit"}${{PYTHONPATH:+:$PYTHONPATH}}" exec "{py}" -m ship_kit.cli "$@"\n')
+    # The installed kit must win over a project's own ship_kit/ copy (python -m would put the project first).
+    ss.write_text(f'#!/bin/sh\nexec "{py}" -c "import sys; sys.path.insert(0, \'{HOME / "kit"}\'); '
+                  f'from ship_kit.cli import main; sys.exit(main())" "$@"\n')
     ss.chmod(0o755)
     if browser:
         print("[5/5] headless Chromium for `ss video` (about 150 MB, once)")
         subprocess.run([str(py), "-m", "playwright", "install", "chromium"], check=False)
     else:
         print("[5/5] browser skipped (`ss video` installs it on first use)")
-    r = subprocess.run([str(py), "-c", "import strands, strands_evals, boto3; from strands.multiagent import GraphBuilder; print('imports ok')"],
+    r = subprocess.run([str(py), "-c", "import strands, strands_evals, strands_harness, strands_shell, boto3; from strands.multiagent import GraphBuilder, Swarm; print('imports ok')"],
                        capture_output=True, text=True)
     ok = r.returncode == 0
     (HOME / "state.json").write_text(json.dumps({"python": str(py), "power": str(POWER), "ok": ok}, indent=2) + "\n")

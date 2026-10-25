@@ -1,6 +1,8 @@
 """ss: the Strands Workshop to Ship kit. Run in your project folder.
 
-  ss init [--path heatsafe|padippu|marundhu|floodready] [--update]   set up this folder (never overwrites)
+  ss init [--example heatsafe] [--update]   set up this folder: a generic starter, or a worked example (never overwrites)
+  ss blocks                       the Strands toolbox: 14 runnable blocks and their status
+  ss block <name>                 run one block live (tools, mcp, hooks, interventions, graph, swarm, ...)
   ss status                       what is set up, what is measured
   ss bedrock                      one live call to your Bedrock model + Amazon Translate
   ss run "message" [--temp --rh --intensity --sun --job --lat --lon]  run the agent once
@@ -21,7 +23,13 @@ from pathlib import Path
 
 KIT = Path(__file__).resolve().parent.parent      # .../kit
 PROJECT_T = KIT / "project"
-PATHS = json.loads((KIT / "paths" / "paths.json").read_text(encoding="utf-8")) if (KIT / "paths" / "paths.json").exists() else {}
+EXAMPLES = KIT / "examples"
+BLOCKS = KIT / "blocks"
+BLOCK_FILES = {"tools": "b01_tools", "mcp": "b02_mcp", "hooks": "b03_hooks", "interventions": "b04_interventions",
+               "graph": "b05_graph", "swarm": "b06_swarm", "agents-as-tools": "b07_agents_as_tools", "sessions": "b08_sessions",
+               "decider": "b09_decider", "shell": "b10_shell", "harness": "b11_harness", "evals": "b12_evals",
+               "voice": "b13_voice", "guardrails": "b14_guardrails"}
+BLOCK_STATUS = {"decider": "KEY", "guardrails": "KEY", "voice": "DOC (needs a microphone)"}
 GITIGNORE = [".venv/", "__pycache__/", "results/_raw/", "*.webm"]
 
 
@@ -42,40 +50,53 @@ def _copy(src: Path, dst: Path, done: list, skipped: list, overwrite: bool = Fal
 def cmd_init(a) -> int:
     if not PROJECT_T.is_dir():
         raise SystemExit("init runs from the installed kit: use ~/.strands-ship/bin/ss init (say 'set up strands ship' in Kiro).")
-    path = a.path
-    if path not in PATHS:
-        raise SystemExit(f"unknown path {path!r}; choose one of {', '.join(PATHS)}")
     root, done, skipped = Path.cwd(), [], []
     _copy(KIT / "ship_kit", root / "ship_kit", done, skipped, overwrite=a.update)
     if a.update:
         print(f"Refreshed ship_kit/ ({len(done)} files). Nothing else touched.")
         return 0
-    agent_src = PROJECT_T / "agent" if path == "heatsafe" else KIT / "paths" / "skeleton" / "agent"
+    if a.example:
+        src = EXAMPLES / a.example
+        if not src.is_dir():
+            names = sorted(p.name for p in EXAMPLES.iterdir() if p.is_dir())
+            raise SystemExit(f"unknown example {a.example!r}; choose one of {', '.join(names)}")
+        agent_src, seed, video = src / "agent", src / "cases.seed.jsonl", src / "video.json"
+    else:
+        agent_src, seed, video = PROJECT_T / "agent", PROJECT_T / "cases.seed.jsonl", PROJECT_T / "video.json"
     _copy(agent_src, root / "agent", done, skipped)
-    seed = PROJECT_T / "cases.seed.jsonl" if path == "heatsafe" else KIT / "paths" / "skeleton" / "cases.seed.jsonl"
     _copy(seed, root / "cases.jsonl", done, skipped)
-    for f in ("requirements.txt", "FAILURES.md", "video.json"):
-        src = PROJECT_T / f if path == "heatsafe" or f != "video.json" else KIT / "paths" / "skeleton" / f
-        _copy(src, root / f, done, skipped)
+    _copy(video, root / "video.json", done, skipped)
+    for f in ("requirements.txt", "FAILURES.md"):
+        _copy(PROJECT_T / f, root / f, done, skipped)
     for sub in ("steering", "hooks", "agents"):
         _copy(PROJECT_T / sub, root / ".kiro" / sub, done, skipped)
-    brief = root / ".kiro" / "steering" / "ship-path.md"
-    if not brief.exists():
-        p = PATHS[path]
-        brief.write_text(f"# Chosen path: {p['name']}\n\n" + "\n".join(f"- **{k}**: {v}" for k, v in p.items() if k != "name") + "\n",
-                         encoding="utf-8")
-        done.append(str(brief))
     gi = root / ".gitignore"
     have = gi.read_text().splitlines() if gi.exists() else []
     add = [x for x in GITIGNORE if x not in have]
     if add:
         gi.write_text("\n".join(have + add) + "\n")
     (root / "results").mkdir(exist_ok=True)
-    print(f"Path: {PATHS[path]['name']}\nCopied {len(done)} files.")
+    print(("Worked example: " + a.example) if a.example else "Generic starter (your idea goes in IDEA.md, then agent/)")
+    print(f"Copied {len(done)} files.")
     if skipped:
         print(f"Kept {len(skipped)} existing files (never overwritten):\n  " + "\n  ".join(skipped))
-    print("Next: `ss bedrock`, then `ss run` (see `ss --help`).")
+    print("Next: `ss bedrock`; then say 'brainstorm' in Kiro (or `ss blocks` to see the Strands toolbox).")
     return 0
+
+
+def cmd_blocks(_a) -> int:
+    for name, f in BLOCK_FILES.items():
+        doc = (BLOCKS / f"{f}.py").read_text(encoding="utf-8").split('"""')[1].strip().splitlines()[0]
+        print(f"{name:16} {BLOCK_STATUS.get(name, 'LIVE'):24} {doc[:90]}")
+    print("\nRun one: ss block <name>. Read the code: " + str(BLOCKS) + ". Full map: the ship-design skill's strands-catalogue.md.")
+    return 0
+
+
+def cmd_block(a) -> int:
+    f = BLOCK_FILES.get(a.name)
+    if not f:
+        raise SystemExit(f"unknown block {a.name!r}; one of: {', '.join(BLOCK_FILES)}")
+    return subprocess.call([sys.executable, str(BLOCKS / f"{f}.py")], cwd=str(BLOCKS))
 
 
 def _here() -> None:
@@ -182,8 +203,11 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="ss", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sp = ap.add_subparsers(dest="cmd", required=True)
     p = sp.add_parser("init")
-    p.add_argument("--path", default="heatsafe")
+    p.add_argument("--example", help="copy a worked example instead of the generic starter (heatsafe)")
     p.add_argument("--update", action="store_true", help="refresh ship_kit/ only")
+    sp.add_parser("blocks")
+    p = sp.add_parser("block")
+    p.add_argument("name")
     sp.add_parser("status")
     sp.add_parser("bedrock")
     sp.add_parser("run", add_help=False)
@@ -200,7 +224,7 @@ def main(argv=None) -> int:
     if argv[:1] == ["run"]:
         return cmd_run(None, argv[1:])
     a = ap.parse_args(argv)
-    return {"init": cmd_init, "status": cmd_status, "bedrock": cmd_bedrock, "cases": cmd_cases,
+    return {"init": cmd_init, "blocks": cmd_blocks, "block": cmd_block, "status": cmd_status, "bedrock": cmd_bedrock, "cases": cmd_cases,
             "measure": cmd_measure, "video": cmd_video, "ship": cmd_ship}[a.cmd](a)
 
 

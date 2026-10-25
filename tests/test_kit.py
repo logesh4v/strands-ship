@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "kit" / "project"))
+sys.path.insert(0, str(ROOT / "kit" / "examples" / "heatsafe"))
 sys.path.insert(0, str(ROOT / "kit"))
 
 from agent import heat, safety, score, tools  # noqa: E402
@@ -99,7 +99,7 @@ def test_score_tamil_language_and_madurai_is_not_alcohol():
 
 
 def test_seed_cases_meet_minimums_and_are_unsigned():
-    cs = [json.loads(line) for line in (ROOT / "kit/project/cases.seed.jsonl").read_text(encoding="utf-8").splitlines() if line]
+    cs = [json.loads(line) for line in (ROOT / "kit/examples/heatsafe/cases.seed.jsonl").read_text(encoding="utf-8").splitlines() if line]
     r = casesmod.check(cs)
     assert not r["errors"] and not r["below_minimum"]
     assert r["counts"]["unsigned"] == len(cs)                        # the author never signs for the builder
@@ -113,14 +113,67 @@ def test_approve_refuses_empty_name():
         casesmod.approve([{"id": "a"}], " ")
 
 
-def test_init_never_overwrites(tmp_path):
+def _ss(cwd, *args):
     env = {**os.environ, "PYTHONPATH": str(ROOT / "kit")}
+    return subprocess.run([sys.executable, "-m", "ship_kit.cli", *args], cwd=cwd, env=env, capture_output=True, text=True)
+
+
+def test_init_gives_generic_starter_not_heatsafe(tmp_path):
+    r = _ss(tmp_path, "init")
+    assert r.returncode == 0, r.stderr
+    app = (tmp_path / "agent" / "app.py").read_text()
+    assert "Generic starter" in app and "heat_risk" not in app
+    assert not (tmp_path / "agent" / "heat.py").exists()
+    chk = _ss(tmp_path, "cases", "check")
+    assert chk.returncode == 1 and "EDIT ME" in chk.stdout              # placeholders are refused
+
+
+def test_init_example_heatsafe(tmp_path):
+    r = _ss(tmp_path, "init", "--example", "heatsafe")
+    assert r.returncode == 0, r.stderr
+    assert (tmp_path / "agent" / "heat.py").exists() and len((tmp_path / "cases.jsonl").read_text().splitlines()) == 31
+    assert _ss(tmp_path, "init", "--example", "nope").returncode != 0
+
+
+def test_blocks_listed_parse_and_documented():
+    import ast
+    from ship_kit import cli
+    catalogue = (ROOT / "skills/ship-design/references/strands-catalogue.md").read_text()
+    for name, f in cli.BLOCK_FILES.items():
+        src = (ROOT / "kit/blocks" / f"{f}.py").read_text()
+        ast.parse(src)
+        assert f"Run: ss block {name}" in src, name
+        assert f"`{name}`" in catalogue, name
+    out = _ss(ROOT, "blocks").stdout
+    assert all(n in out for n in cli.BLOCK_FILES)
+
+
+def test_starter_scores_handoff_and_must_include():
+    sys.path.insert(0, str(ROOT / "kit" / "project"))
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("starter_score", ROOT / "kit/project/agent/score.py",
+                                                  submodule_search_locations=[])
+    # load as part of a package so its relative import works
+    import types
+    pkg = types.ModuleType("starter"); pkg.__path__ = [str(ROOT / "kit/project/agent")]; sys.modules["starter"] = pkg
+    sc = importlib.import_module("starter.score")
+    case = {"id": "c", "lang": "en", "job": "g", "text": "x", "expected": {"escalation": "emergency", "must_include": []}}
+    out = {"plan": {"answer": "Take two now.", "escalation": "Take two now.", "citations": []}, "meta": {"path": "agent"}}
+    assert sc.score(case, out)["unsafe"] == ["hand-off case answered by the model"]
+    out["plan"]["escalation"] = "Please ask your pharmacist before changing anything."
+    assert sc.score(case, out)["unsafe"] == []                     # a baseline that hands off in words counts
+    out["plan"]["escalation"] = "Take two now."
+    out["meta"]["path"] = "handoff"
+    assert sc.score(case, out)["unsafe"] == []
+
+
+def test_init_never_overwrites(tmp_path):
     (tmp_path / "README.md").write_text("mine")
-    r = subprocess.run([sys.executable, "-m", "ship_kit.cli", "init"], cwd=tmp_path, env=env, capture_output=True, text=True)
+    r = _ss(tmp_path, "init")
     assert r.returncode == 0, r.stderr
     assert (tmp_path / "agent" / "app.py").exists() and (tmp_path / ".kiro" / "hooks" / "strands-ship.json").exists()
     (tmp_path / "agent" / "app.py").write_text("# edited")
-    subprocess.run([sys.executable, "-m", "ship_kit.cli", "init"], cwd=tmp_path, env=env, capture_output=True, text=True)
+    _ss(tmp_path, "init")
     assert (tmp_path / "agent" / "app.py").read_text() == "# edited"
     assert (tmp_path / "README.md").read_text() == "mine"
 

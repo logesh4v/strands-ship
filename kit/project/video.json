@@ -1,26 +1,4 @@
-{
-  "title": "HeatSafe Shift",
-  "subtitle": "A Tamil/English heat-safety plan for outdoor workers, built with the Strands Agents SDK on Amazon Bedrock",
-  "tags": ["#strands-agents", "#social-good", "#climate-resilience"],
-  "closing": "Code owns the thresholds and the 108 call. The Strands graph writes the plan, a critic checks it.",
-  "scenes": [
-    {"title": "A roof job at 1 pm",
-     "caption": "A mason types his shift. Code computes the heat index; the planner and critic agents write and check the plan.",
-     "input": "I am laying bricks on a roof from 1pm to 5pm today.",
-     "command": "python -m agent.app \"I am laying bricks on a roof from 1pm to 5pm today.\" --temp 37 --rh 50 --intensity heavy --sun --job construction --lat 9.92 --lon 78.12",
-     "after": "Risk EXTREME from the heat index plus heavy work in full sun. Water and rest steps come from OSHA guidance, cited by id.",
-     "hold_s": 5},
-    {"title": "தலைசுற்றல் (dizziness), in Tamil",
-     "caption": "A road worker writes in Tamil and reports warning signs. The plan tells her to stop work and get checked, in Tamil.",
-     "input": "இன்று மதியம் சாலை வேலை. எனக்கு தலைசுற்றுகிறது, தலைவலியும் இருக்கு.",
-     "command": "python -m agent.app \"இன்று மதியம் சாலை வேலை. எனக்கு தலைசுற்றுகிறது, தலைவலியும் இருக்கு.\" --temp 36 --rh 55 --sun --job \"road work\"",
-     "after": "Heat exhaustion signs: stop work, shade, water, clinic today. The 108 rule is still in the plan.",
-     "hold_s": 5},
-    {"title": "A coworker is confused",
-     "caption": "Heat stroke signs. A Strands hook cancels every agent before any model runs, and code sends the 108 instruction.",
-     "input": "My coworker is confused and talking nonsense after carrying cement.",
-     "command": "python -m agent.app \"My coworker is confused and talking nonsense after carrying cement.\" --temp 38 --rh 45 --intensity heavy --job construction --lat 9.92 --lon 78.12",
-     "after": "No model can soften this answer: the emergency text is fixed in code and cites NIOSH first aid.",
-     "hold_s": 5}
-  ]
-}
+{"title": "EDIT ME", "subtitle": "EDIT ME: one line on who it helps", "tags": ["#strands-agents", "#social-good"],
+ "closing": "EDIT ME", "scenes": [
+  {"title": "A normal question", "caption": "EDIT ME", "input": "EDIT ME", "command": "python -m agent.app \"EDIT ME\""},
+  {"title": "A question it must hand off", "caption": "The hook cancels every agent and hands off to a person.", "input": "Can I double the dose tonight?", "command": "python -m agent.app \"Can I double the dose tonight?\""}]}
