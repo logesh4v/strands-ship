@@ -1,0 +1,50 @@
+{
+  "heatsafe": {
+    "name": "HeatSafe Shift (climate resilience) - DEFAULT",
+    "rank": "1 of 4. Council verdict 26 Oct 2026: both judges' final vote, final-judge confidence 88/100.",
+    "pitch": "A Tamil/English agent that turns forecast, job and symptoms into a safe-shift plan for outdoor workers, with heat thresholds and the 108 emergency call owned by code, not the model.",
+    "who": "Construction, road, sanitation, farm, kiln and salt-pan workers, delivery riders and street vendors: low-wage, outdoors in the hottest hours, often low literacy.",
+    "measurable": "Same signed gold set (30+ cases, 8+ emergencies, 10+ Tamil, 3+ job types) for a one-prompt baseline and the graph: 108 recall, unsafe-advice count, risk-level accuracy, citation validity, completeness, Strands Evals goal success, by language and job.",
+    "architecture": "Strands GraphBuilder planner -> critic -> conditional edge back (max 2 passes); ShiftPlan structured output; deterministic @tool for heat risk; RedFlagGate hook on BeforeNodeCallEvent; Amazon Bedrock (Nova 2 Lite default) + Amazon Translate Tamil fallback.",
+    "why_first": "Highest social impact and originality for a one-week build; objective pass/fail safety metrics; the 'code owns thresholds, hook owns emergencies, critic owns quality' split goes well beyond the workshop's swarm.",
+    "biggest_risk": "Judges asking whether safer generated advice changes real behaviour. Answer with a small consented field test if you can, and never claim outcomes you did not measure.",
+    "stand_out": "Pick ONE worker group and make it yours (salt-pan workers in Thoothukudi, sanitation workers on a Madurai ward route, sugarcane cutters). Many teams from one user group should not ship the same agent: change the group, the local guidance and the cases.",
+    "stretch": "Amazon Transcribe Tamil speech input (ta-IN); English/Hindi voice replies with Nova 2 Sonic (it has no Tamil voice); Amazon Location Service routing after the points are checked; Bedrock Knowledge Bases for longer guidance; AgentCore deployment; a consented field test."
+  },
+  "padippu": {
+    "name": "Padippu Evidence Loop (education)",
+    "rank": "2 of 4. Most feasible, but the hackathon page lists 'textbook chapter -> guided practice set' as its own example, so originality is capped.",
+    "pitch": "Turns a state-board textbook page into three levels of Tamil/English practice where every question links back to the sentence it came from; a verifier rejects unsupported items.",
+    "who": "Government-school teachers with mixed-level classes; first-generation learners who read Tamil better than English.",
+    "measurable": "Teacher-signed gold set: grounded-question rate vs a one-prompt baseline, answer-key accuracy, minutes to build a worksheet by hand vs with the agent (2-3 real teachers, timed).",
+    "architecture": "GraphBuilder extractor -> generator -> verifier with a conditional edge back to the generator; structured PracticeSet; teacher approval step; Bedrock + Amazon Translate.",
+    "why_first": "",
+    "biggest_risk": "Looks like the example on the hackathon page; legacy-font textbook PDFs extract as garbage Tamil.",
+    "stand_out": "Make the source-span verifier and the measured teacher-time saving the headline, not the worksheet.",
+    "stretch": "Amazon Textract for photographed pages; Bedrock Knowledge Bases over the textbook; a small learner test."
+  },
+  "marundhu": {
+    "name": "Marundhu Clear (health)",
+    "rank": "3 of 4. Strong impact, but medication safety needs clinical validation that is hard in one week.",
+    "pitch": "Explains a prescription in plain Tamil/English and hands every dose or interaction question to a pharmacist instead of answering it.",
+    "who": "Elderly and low-literacy patients in rural districts.",
+    "measurable": "Pharmacist-signed gold set: hand-off recall on dose/interaction questions (must be 100%), plain-language comprehension quiz, unsafe-advice count vs a one-prompt baseline.",
+    "architecture": "Graph explainer -> safety critic; a gate hook that cancels nodes on any dose-change or interaction question; structured output; Bedrock + Translate.",
+    "why_first": "",
+    "biggest_risk": "Medical harm. Never change doses, never claim interaction checking without a licensed data source.",
+    "stand_out": "Partner with one real pharmacist who signs the cases.",
+    "stretch": "Amazon Textract for printed prescriptions (handwriting is unreliable); Comprehend Medical is English-only."
+  },
+  "floodready": {
+    "name": "FloodReady Household (climate resilience)",
+    "rank": "4 of 4. Meaningful, but reliable local shelter and hazard data is hard to prepare and check in one week.",
+    "pitch": "Interviews a household and builds an offline monsoon flood plan, then stress-tests it against blocked roads, power cuts, disability and missing documents.",
+    "who": "Low-income households in flood-prone wards (Chennai, Madurai), older adults, people with disabilities.",
+    "measurable": "Signed household scenarios: critical-item coverage before and after the stress test, unsafe-route count, vs a one-prompt baseline.",
+    "architecture": "Graph planner -> simulator (injects failures) -> repairer; structured printable plan; curated dated shelter list; Bedrock + Translate.",
+    "why_first": "",
+    "biggest_risk": "Stale shelter or road data becomes dangerous advice.",
+    "stand_out": "The counterfactual stress test is the original part; make it visible in the video.",
+    "stretch": "Amazon Location Service routing after the shelter list is checked."
+  }
+}

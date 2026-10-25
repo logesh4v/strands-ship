@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "strands-agents": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["strands-agents-mcp-server@0.3.0"],
+      "env": { "FASTMCP_LOG_LEVEL": "ERROR" }
+    },
+    "aws-knowledge-mcp-server": {
+      "type": "streamable-http",
+      "url": "https://knowledge-mcp.global.api.aws"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "FeatureCollection",
+  "note": "SAMPLE points only, placed near Madurai so the demo runs. They are NOT checked places. Replace every feature with a point you or a partner visited, set verified_on to that date and verified_by to who checked it. The agent always says when the list was last checked and never claims a point is open right now.",
+  "features": [
+    {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.1198, 9.9195]},
+     "properties": {"name": "Sample point A: drinking water and shade (replace me)", "kind": "water+shade", "verified_on": null, "verified_by": null}},
+    {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.1302, 9.9252]},
+     "properties": {"name": "Sample point B: shaded rest area (replace me)", "kind": "shade", "verified_on": null, "verified_by": null}},
+    {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.1105, 9.9330]},
+     "properties": {"name": "Sample point C: drinking water (replace me)", "kind": "water", "verified_on": null, "verified_by": null}}
+  ]
+}
