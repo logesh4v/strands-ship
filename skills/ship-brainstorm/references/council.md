@@ -1,4 +1,6 @@
-# How the recommendation was made (26 Oct 2026)
+# How the example ideas were judged (26 Oct 2026)
+
+This is a record of method, not a recommendation for your team. Reuse the method on your own ideas: independent proposals, a blind cross-critique, a fact check, then a final ruling.
 
 Two frontier models judged the hackathon brief as an LLM-as-judge pair: **Claude Opus 5.5** and **GPT-5.6 sol**, run through Kiro. Three rounds.
 

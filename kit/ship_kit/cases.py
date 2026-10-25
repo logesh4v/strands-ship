@@ -19,7 +19,7 @@ ESC = {"none", "care", "emergency"}
 
 def load(path: Path = PATH) -> list[dict]:
     if not path.exists():
-        raise SystemExit(f"{path} not found. Run `ss init` (it copies the 31 starter cases) or write your own.")
+        raise SystemExit(f"{path} not found. Run `ss init` (it copies example lines to replace) or write your own.")
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
@@ -32,7 +32,7 @@ def check(cases: list[dict]) -> dict:
     for i, c in enumerate(cases, 1):
         cid = c.get("id") or f"line {i}"
         exp = c.get("expected") or {}
-        heat = "risk_level" in exp  # HeatSafe cases carry weather; skeleton paths do not
+        heat = "risk_level" in exp  # HeatSafe cases carry weather; the generic starter does not
         for f in ("id", "text", "job", "expected") + (("temp_c", "rh") if heat else ()):
             if c.get(f) in (None, ""):
                 errors.append(f"{cid}: missing {f}")

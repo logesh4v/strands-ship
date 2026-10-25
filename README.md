@@ -1,36 +1,61 @@
 # Strands Workshop to Ship: AWS UG MDU Cook Book
 
-A Kiro power by **Logesh** (AWS User Group Madurai) for the AWS Builder Center hackathon **[Strands SDK: Workshop to Ship](https://builder.aws.com)** (28 Oct - 4 Nov 2026).
+A Kiro power by **Logesh** (AWS User Group Madurai) for the AWS Builder Center hackathon **Strands SDK: Workshop to Ship** (28 Oct - 4 Nov 2026).
 
-You get a working social-good agent built with the **Strands Agents SDK** on Amazon Bedrock, a way to prove it beats a plain prompt, a demo video recorded from a live run, and a submission checklist. Everything runs from Kiro chat, one sentence at a time.
+Bring **your own** social-good idea. The power helps your team brainstorm it from the people you can actually reach, design it from the whole Strands toolbox, build it on Amazon Bedrock, prove it beats a plain prompt, record the demo from a live run, and check the submission. Everything runs from Kiro chat, one sentence at a time.
 
-## The agent it gives you: HeatSafe Shift
+There is no default project. When a whole community ships the same agent, every team loses originality points, so each team starts from its own users and problem. One fully built agent, **HeatSafe Shift**, is included as a worked example to learn from.
 
-Outdoor workers in Tamil Nadu (construction, road, sanitation, farm, kiln, salt pan, delivery, street vending) work through the hottest hours. HeatSafe Shift turns the weather, the job and any symptoms into a safe plan for one shift, in **Tamil or English**.
+## The recipes
 
-- **Code owns what must never be wrong**: the heat index, the risk level, how much water, the warning signs and the 108 emergency call.
-- **A Strands graph writes the plan**: a planner agent, a critic agent that checks it, and a loop back to the planner.
-- **A Strands hook stops the agents** the moment someone describes heat-stroke signs, and sends the fixed 108 instruction instead.
+| Say in Kiro chat | What happens | You get |
+|---|---|---|
+| **set up strands ship** | Checks the machine, installs the kit once, sets up a generic starter, tests Bedrock and Translate | `agent/`, `cases.jsonl`, `.kiro/` |
+| **brainstorm** | Starts from people you reach and a real story; three ideas scored on the rubric; argued for and against; kept distinct from other teams | `IDEA.md` |
+| **design my agent** | Picks the 3-5 Strands blocks that each do a visible job for your users, runs them live, writes the design | `DESIGN.md` |
+| **build the agent** | Composes your agent from the blocks, safety in code, fail-closed | `agent/` |
+| **label cases** | Your user group's real messages, labelled and signed by a named person | `cases.jsonl` |
+| **measure my agent** | Your agent vs a one-prompt baseline on the same signed cases, plus the submission gate | `results/MEASURE.md` |
+| **record the video** | Films a live run with evidence badges and your measured numbers, under 3 minutes | `results/demo.mp4` |
+| **submission check** | Facts for the article, README and article drafts, a PASS / FAIL / HUMAN list | `SUBMISSION.md` |
 
-### Measured, not claimed
+## The Strands toolbox: 14 runnable blocks
 
-31 labelled cases (8 emergencies, 11 in Tamil, 8 job types), the same Amazon Nova 2 Lite model for both sides. The baseline is one agent with one prompt and the same guidance pasted in.
+`ss blocks` lists them; `ss block <name>` runs one live. Each is one short, working file in `kit/blocks/`, written from the official docs and run against Amazon Bedrock (Nova 2 Lite) on 26 Oct 2026. The full map, with when each one earns its place in a social-good agent, is [`skills/ship-design/references/strands-catalogue.md`](skills/ship-design/references/strands-catalogue.md).
+
+| Block | Strands project | What it shows | Status |
+|---|---|---|---|
+| `tools` | Agents SDK | `@tool` + Pydantic structured output | Live-tested |
+| `mcp` | Agents SDK | `MCPClient` on the AWS Knowledge MCP server | Live-tested |
+| `hooks` | Agents SDK | A hook cancels the model call on crisis words, fixed helpline reply | Live-tested |
+| `interventions` | Agents SDK | `Deny` without consent, `Guide` to shorten an SMS | Live-tested |
+| `graph` | Agents SDK | `GraphBuilder` writer -> checker -> writer, counted loop | Live-tested |
+| `swarm` | Agents SDK | `Swarm` triage handing off to specialists (the workshop's end point) | Live-tested |
+| `agents-as-tools` | Agents SDK | `Agent.as_tool()`: simplifier then Tamil translator | Live-tested |
+| `sessions` | Agents SDK | `FileSessionManager`: a new Agent remembers the student | Live-tested |
+| `decider` | Labs: Strands Decider | Calibrated yes/no and choice answers via the UG Madurai hosted API | Needs `DECIDER_API_KEY` (endpoint checked) |
+| `shell` | Strands Shell | Sandboxed data work; host files are not visible | Live-tested |
+| `harness` | Strands harness | `create_harness` with your tool, coding tools off | Live-tested |
+| `evals` | Strands Evals | `AdversarialCaseGenerator` red-team + rubric judge | Live-tested (6/6 attacks held) |
+| `voice` | Agents SDK (BidiAgent) | Nova Sonic voice with tools and barge-in. Nova Sonic has no Tamil | From the official quickstart; needs a microphone |
+| `guardrails` | Bedrock + Agents SDK | Bedrock Guardrails on the model, PII redaction | Needs a Bedrock guardrail id |
+
+The catalogue also covers what has no block: Workflow and A2A, memory stores, plugins and skills, steering, Cedar authorization, **Strands Box** (a macOS policy sandbox for running your coding agent while you build), Strands Evals' trace evaluators, user simulation and chaos testing, the other Strands Labs projects, and the AWS services that read as a "novel use" when they do a real job (Translate, Transcribe ta-IN, Location Service, Bedrock AgentCore).
+
+## Worked example: HeatSafe Shift
+
+A Tamil/English agent that turns the weather, the job and any symptoms into a safe plan for one outdoor shift. Code owns the heat index (NWS formula), the risk level (OSHA bands), water, warning signs and the 108 call. A Strands hook stops every agent on heat-stroke signs. A planner -> critic graph writes and checks the plan, and fails closed when the critic never passes. See it with `ss init --example heatsafe` in a separate folder.
+
+Measured on its 31 draft cases (8 emergencies, 11 in Tamil), the same Nova 2 Lite model on both sides:
 
 | | HeatSafe Shift | One-prompt baseline |
 |---|---|---|
 | Emergencies sent to 108 | **100%** | 88% |
 | Plans with unsafe advice | **0** | 21 |
 | Risk level correct | **100%** | 32% |
-| Plan complete, in the worker's language | **100%** | 73% |
 | Goal success (Strands Evals judge, 0-1) | **1.0** | 0.76 |
 
-Measured 26 Oct 2026 on a clean install. Across three full runs the baseline had 21-24 unsafe plans; HeatSafe Shift had 0 every time. These are the author's draft cases: your numbers come from your own signed cases (`ss measure`).
-
-### Why this idea
-
-Two frontier models, Claude Opus 5.5 and GPT-5.6 sol, judged six candidate ideas against the hackathon rubric in a three-round LLM-as-judge council: independent proposals, a blind cross-critique, then a final judge. Both ended on HeatSafe Shift (final confidence 88/100). The full record, including where they disagreed and how it was settled, is in [`skills/ship-pick-idea/references/council.md`](skills/ship-pick-idea/references/council.md).
-
-Prefer another focus area? The power ranks three alternatives and gives you a runnable skeleton for each: **Padippu** (education: cited Tamil/English practice from textbooks), **Marundhu Clear** (health: plain-language prescriptions with pharmacist hand-off), **FloodReady** (climate: a household flood plan that is stress-tested).
+Across three full runs the baseline had 21-24 unsafe plans; HeatSafe Shift had 0 each time. The cases are the author's drafts. Your own agent gets its numbers from your own signed cases. How two frontier models judged this and three other example ideas is in [`skills/ship-brainstorm/references/council.md`](skills/ship-brainstorm/references/council.md): reuse the method, not the idea.
 
 ## Install
 
@@ -41,69 +66,37 @@ Install the power, any one of:
 - Kiro IDE: clone this repo, then Add Custom Power -> **Import power from a folder**
 - Kiro CLI: `kiro-cli powers install <path-to-clone>`
 
-Open an empty project folder and say **"set up strands ship"**. When it finishes, start a **new chat session** (Kiro loads a project's hooks only when a session starts; click Manage -> Trust if you see "Restricted Mode").
+Open an empty project folder and say **"set up strands ship"**. When it finishes, start a **new chat session**: Kiro loads a project's hooks only when a session starts (click Manage -> Trust if you see "Restricted Mode").
 
-AWS credentials stay in your own terminal (`aws configure` or `aws sso login`). Never paste keys into chat.
-
-## The recipes
-
-| Say in Kiro chat | What happens | You get |
-|---|---|---|
-| **set up strands ship** | Checks the machine, installs the kit once, sets up the folder, tests Bedrock and Translate | `agent/`, `cases.jsonl`, `.kiro/` |
-| **pick my idea** | The recommendation scored on the rubric, the ranked alternatives, five questions that make it yours | `IDEA.md` |
-| **build the agent** | Runs the agent live three ways, explains who owns what, adapts it to your workers and district | `agent/` |
-| **label cases** | Review and extend the starter cases; a named person signs off | `cases.jsonl` |
-| **measure my agent** | Agent vs one-prompt baseline on the same signed cases, plus the submission gate | `results/MEASURE.md` |
-| **record the video** | Films a live run with evidence badges and your measured numbers, under 3 minutes | `results/demo.mp4` |
-| **submission check** | Facts for the article, README and article drafts, a PASS / FAIL / HUMAN list | `SUBMISSION.md` |
+AWS credentials and the Decider key stay in your own terminal (`aws configure`, `aws sso login`, `export DECIDER_API_KEY=...`). Never paste them into chat.
 
 Prefer the terminal?
 ```bash
 python3 skills/ship-setup/scripts/ship.py setup
-cd ~/my-heatsafe && ~/.strands-ship/bin/ss init && ~/.strands-ship/bin/ss bedrock
-~/.strands-ship/bin/ss run "I am laying bricks on a roof from 1pm to 5pm" --temp 37 --rh 50 --intensity heavy --sun
+mkdir ~/my-agent && cd ~/my-agent && ~/.strands-ship/bin/ss init && ~/.strands-ship/bin/ss bedrock
+~/.strands-ship/bin/ss blocks
+~/.strands-ship/bin/ss block hooks
 ```
 
-## How it works
+## Commands (`~/.strands-ship/bin/ss`)
 
-```
-worker message ─► [risk]  code: NWS heat index + OSHA bands ─────────────┐
-                  [safety] Strands hook: heat-stroke signs? ─► cancel all agents ─► fixed "call 108"
-                  Strands GraphBuilder:  planner ─► critic ─(revise, max 2)─► planner
-                  [code]  put back every code-owned field; critic never passed -> fixed text only
-                  [lang]  Tamil speaker got English? -> Amazon Translate
-                  ShiftPlan (structured output) ─► the worker
-```
-
-| Piece | File | What it does |
-|---|---|---|
-| Heat risk | `agent/heat.py` | US NWS heat index; OSHA bands (below 91 F lower, 91-103 moderate, 103-115 high, above 115 extreme); one level up for heavy work or full sun |
-| Red-flag gate | `agent/safety.py` | NIOSH heat-illness signs in English and Tamil; a hook on `BeforeNodeCallEvent` cancels every graph node |
-| Graph | `agent/app.py` | Planner (tools: heat risk, curated guidance, nearest checked water points) and critic, both with Pydantic structured output |
-| Guidance | `agent/data/guidance.json` | The only sources the agent may cite (OSHA, NIOSH, NWS, TN 108), each with a date |
-| Baseline | `agent/baseline.py` | One agent, one prompt, same model, same guidance |
-| Measurement | `ship_kit/measure.py` | Deterministic safety scoring plus a Strands Evals judge, by language and job; blocks submission until the agent is safe on every case and beats the baseline |
-| Video | `ship_kit/video.py` | A headless browser films a studio page while the real commands run |
-
-Your project repo runs without the power: `ss init` copies `ship_kit/` (Apache-2.0) and a pinned `requirements.txt`.
-
-**Pinned and tested:** Strands Agents 1.62.0, Strands Agents Tools 0.8.10, Strands Evals 1.7.0, boto3 1.43.118, Pydantic 2.14.1, Playwright 1.63.0; Python 3.12 and 3.13 on macOS.
+`init [--example heatsafe] [--update]`, `blocks`, `block <name>`, `status`, `bedrock`, `run "message" [...]`, `cases check|show|approve --by "Name"`, `measure [--limit N]`, `video`, `ship`. Add `--help`.
 
 ## MCP servers
 
 Configured in `mcp.json`, both live-tested:
-- **strands-agents** (`uvx strands-agents-mcp-server@0.3.0`): search and read the Strands docs.
+- **strands-agents** (`uvx strands-agents-mcp-server@0.3.0`): search and read the Strands docs while you build.
 - **aws-knowledge-mcp-server** (`https://knowledge-mcp.global.api.aws`): AWS docs, What's New, regional availability. No credentials needed.
+
+**Pinned and tested:** Strands Agents 1.62.0, Strands Agents Tools 0.8.10, Strands Evals 1.7.0, Strands harness 0.3.2, Strands Shell 0.5.0, boto3 1.43.118, Pydantic 2.14.1, Playwright 1.63.0, on Python 3.12 and 3.13 (macOS). Your project repo runs without the power: `ss init` copies `ship_kit/` (Apache-2.0) and a pinned `requirements.txt`.
 
 ## Limits, said plainly
 
-- The 31 starter cases and labels are drafts. Rewrite many in your workers' own words, and have a named person read and sign every case.
-- The water and shade points are samples near Madurai. Replace them with places someone visited.
-- The red-flag gate is a phrase list. It misses wording it has never seen; `ss measure` proves recall on your cases, not on every sentence.
-- Have a fluent reader check the Tamil in `agent/heat.py` and `agent/safety.py` before you film.
-- The numbers show safer, more accurate plans than a one-prompt agent on labelled scenarios. They do not show that workers behave more safely; a consented field test would.
-- No Tamil voice: Amazon Nova 2 Sonic and Amazon Polly do not speak Tamil. Amazon Transcribe does take Tamil speech, which is a stretch goal.
-- Many teams from one user group should not ship the same agent. Pick your own worker group and district.
+- Blocks marked "needs a key / id / microphone" were not run end to end by the author; their code follows the official docs and the parts that could be checked were (the Decider endpoint answers, the Bedrock guardrail parameters exist).
+- Strands Box is pre-release (0.1.x) and macOS-only; the catalogue describes it from its docs.
+- Model-written Tamil can be wrong. Keep safety text as fixed lists in code and have a fluent reader check them.
+- Measured numbers show safer, more accurate answers than a one-prompt agent on labelled cases. They do not show that people behave differently; a consented field test would.
+- Nova 2 Sonic and Amazon Polly do not speak Tamil. Amazon Transcribe accepts Tamil speech (ta-IN).
 
 ## Troubleshooting
 
@@ -111,10 +104,11 @@ Configured in `mcp.json`, both live-tested:
 |---|---|
 | `doctor` blocks on Python | Install Python 3.12 (`brew install python@3.12`) |
 | `ss bedrock`: credentials | `aws configure` or `aws sso login` in your terminal; set `AWS_PROFILE` if not default |
-| `ss bedrock`: access denied or payment instrument | Enable Amazon Nova in Bedrock Model access, or choose another model with `SHIP_MODEL` |
+| `ss bedrock`: access denied or payment instrument | Enable Amazon Nova in Bedrock Model access, or choose another model with `SHIP_MODEL` (Anthropic models need an AWS Marketplace subscription) |
+| `ss block decider` says no key | Get a free team key on [awsugmdu.in](https://www.awsugmdu.in), `export DECIDER_API_KEY=...` |
+| `ss cases check`: EDIT ME | Replace the example lines with your own cases |
 | Gate fails on sign-off | `ss cases show`, read every label, then `ss cases approve --by "Your Name"` |
 | `ss video` cannot start a browser | `~/.strands-ship/venv/bin/python -m playwright install chromium` |
-| Tamil shows as boxes | Install a Tamil font (Ubuntu: `sudo apt install fonts-noto-core`) |
 | Remove everything | `python3 skills/ship-setup/scripts/ship.py uninstall --yes` |
 
 ## Licence

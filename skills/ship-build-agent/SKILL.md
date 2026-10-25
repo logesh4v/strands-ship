@@ -1,32 +1,27 @@
 ---
 name: ship-build-agent
-description: Recipe 2 of the strands-ship power. Run, understand and adapt the Strands Agents SDK agent in agent/ (HeatSafe Shift by default) for the user's worker group, language and district. Use when the user says "build the agent", "run the agent", "change the agent", "add a worker group", or asks how the graph, hook or critic works.
+description: Recipe 3 of the strands-ship power. Build the builder's own Strands Agents SDK agent in agent/ from IDEA.md and DESIGN.md, composing the runnable Strands blocks (tools, MCP, hooks, interventions, graph, swarm, agents-as-tools, sessions, Decider, Shell, harness, guardrails, voice) and keeping safety in code. Use when the user says "build the agent", "write the agent", "add a block", "run the agent", "change the agent", or asks how the graph, hook or critic works.
 ---
-# Recipe 2: build the agent
+# Recipe 3: build the agent
 
-Commands go through `~/.strands-ship/bin/ss` (written `ss`). Read `.kiro/steering/ship-method.md` and `IDEA.md` first. For Strands API questions use the `strands-agents` MCP server (search_docs, fetch_doc); for AWS facts use `aws-knowledge-mcp-server`. Do not guess an API.
+Commands go through `~/.strands-ship/bin/ss` (written `ss`). Read `IDEA.md`, `DESIGN.md` and `.kiro/steering/ship-method.md` first. Code for every block is in `~/.strands-ship/kit/blocks/` (a working, live-tested file each); the full worked example is `~/.strands-ship/kit/examples/heatsafe/agent/`. For any API question use the `strands-agents` MCP server; do not guess. If DESIGN.md does not exist, run recipe 2 first.
 
-## Step 1: run it as shipped (three live runs, about 10 s each)
-1. `ss run "I am laying bricks on a roof from 1pm to 5pm today." --temp 37 --rh 50 --intensity heavy --sun --job construction --lat 9.92 --lon 78.12`
-2. `ss run "இன்று மதியம் சாலை வேலை. எனக்கு தலைசுற்றுகிறது." --temp 36 --rh 55 --sun --job "road work"`
-3. `ss run "My coworker is confused and talking nonsense" --temp 38 --rh 45 --intensity heavy`
-Show the `[risk] [safety] [critic] [code] [lang] [plan]` lines and explain each in one sentence. Without `--temp`, give `--lat --lon` and the weather comes from Open-Meteo (free, no key).
+## Step 1: run the starter as it is
+`ss run "a real message from your user group"`. The starter (`agent/app.py`) is a planner -> critic graph with a red-flag hook and structured output. Show the `[safety] [critic] [plan]` lines and explain them in one sentence each.
 
-## Step 2: explain who owns what (the originality story)
-- `agent/heat.py`: US NWS heat index + OSHA risk bands, plus the kit's one-level bump for heavy work or full sun. Code only.
-- `agent/safety.py`: red-flag phrases (English and Tamil) from NIOSH heat-illness signs. `RedFlagGate` is a Strands hook on `BeforeNodeCallEvent` that cancels every node; the emergency text is fixed.
-- `agent/app.py`: `GraphBuilder` planner -> critic -> conditional edge back to planner (max 2 passes), `ShiftPlan` structured output, `_enforce()` puts back every code-owned field and prints `[code] corrected`, Amazon Translate if a Tamil user got English.
-- `agent/data/guidance.json`: the only sources the planner may cite. `agent/data/places.geojson`: SAMPLE points that must be replaced.
+## Step 2: make the domain real (in this order)
+1. **The decision that must never be wrong** (from DESIGN.md) goes in plain Python: a `@tool` with sourced thresholds, or a hook, or Decider above a calibrated threshold. The model reads it; code puts it back if the model changes it (see `_enforce()` in the HeatSafe example) and prints `[code] corrected`.
+2. **Red flags**: replace `RED_FLAGS` and `HANDOFF` in `agent/app.py` with the user group's real danger signs and the real number or person to hand off to, in every language they use. Cite the source for each number in a comment.
+3. **Sources**: replace `agent/data/guidance.json`. Every item needs a source and the date someone read it. The planner may cite only these ids.
+4. **Output fields**: edit `Answer` in `agent/plan.py` so every field can be checked by `agent/score.py`.
 
-## Step 3: make it theirs (from IDEA.md)
-- Worker group: add their job's real hazards and times to the planner prompt in `agent/app.py` (PLANNER), and their wording to `agent/safety.py` lists (in both languages).
-- District: replace every feature in `places.geojson` with points a person visited; set `verified_on` and `verified_by`. Until then the plan says "NOT checked yet".
-- Guidance: add items only with a source URL and the date read. Indian sources (NDMA heat-wave guidelines, the Tamil Nadu Heat Action Plan 2026) are good additions if the user reads them.
-- Emergency number outside Tamil Nadu: change `NUMBER` and `TEXT` in `agent/safety.py`.
-- Tamil text in `heat.py` and `safety.py` was written by the power author; have a fluent reader check it before the video.
-After any change to `heat.py`, `safety.py` or `data/`, re-run recipe 4 (measure). Do not change thresholds without a cited source.
+## Step 3: add the blocks DESIGN.md chose
+Open each block file and copy the pattern, not the demo data: `b01_tools` (tools + structured output), `b02_mcp` (MCP servers), `b03_hooks` (hard stop), `b04_interventions` (Deny / Guide / Confirm), `b05_graph` (counted loop), `b06_swarm` (handoffs), `b07_agents_as_tools`, `b08_sessions` (remember a person), `b09_decider` (fast calibrated decision), `b10_shell` (sandboxed data work; one Shell per thread), `b11_harness` (assembled agent), `b12_evals` (red-team), `b13_voice` (Nova Sonic: no Tamil), `b14_guardrails` (Bedrock Guardrails). After each addition run `ss run "..."` and show the new evidence line. Keep `baseline.py` as one agent with one prompt and the same sources: it is what you must beat.
 
-## Stretch goals (only after recipe 4 passes)
-Amazon Transcribe ta-IN speech input; English/Hindi voice replies with Nova 2 Sonic (no Tamil voice exists); Amazon Location Service routing once points are checked; Bedrock Knowledge Bases; deploy to Amazon Bedrock AgentCore. Each one must appear in the measured results or the article's limits, not just the architecture diagram.
+## Step 4: fail closed
+If a checker never passes, ship only fixed, sourced text (HeatSafe's `_enforce(..., critic_ok=False)` shows how). If Decider's confidence is below your threshold, ask a person. If a tool errors, say so plainly. Never let the model fill a gap in a safety answer.
 
-Next: say "label cases".
+## Step 5: Tamil and other languages
+Tamil text from the model can be wrong; keep warning signs, emergency text and first-aid steps as fixed lists in code (the HeatSafe example does), and have a fluent reader check them. Amazon Translate is a fallback, not a reviewer.
+
+After any change to safety code or `agent/data/`, re-run recipe 5 (measure). Next: say "label cases".

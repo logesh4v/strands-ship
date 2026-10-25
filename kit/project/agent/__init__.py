@@ -1,1 +1,1 @@
-"""HeatSafe Shift agent (Strands Workshop to Ship cookbook template)."""
+"""Generic strands-ship starter agent: replace the EDIT ME parts with your idea."""

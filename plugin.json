@@ -1,11 +1,28 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "strands-ship",
-  "version": "1.0.0",
-  "description": "Ship a social-good agent with the Strands Agents SDK for the AWS Builder Center 'Strands SDK: Workshop to Ship' hackathon: set up, pick the strongest idea (a council of two frontier models picked HeatSafe Shift), build a Strands graph agent on Amazon Bedrock, label cases, measure against a one-prompt baseline, record the demo video from a live run, check the submission",
-  "author": { "name": "Logesh", "url": "https://github.com/logesh4v" },
-  "keywords": ["strands ship", "workshop to ship", "set up strands ship", "pick my idea", "build the agent",
-               "label cases", "measure my agent", "record the video", "submission check", "social good",
-               "heatsafe", "strands agents", "strands graph", "heat safety", "tamil"],
+  "version": "1.1.0",
+  "description": "Ship your own social-good agent with the Strands toolbox for the AWS Builder Center 'Strands SDK: Workshop to Ship' hackathon: brainstorm an idea from the people you reach, design it from 14 live-tested Strands blocks (SDK tools, MCP, hooks, interventions, graph, swarm, agents-as-tools, sessions, harness, Shell, Decider, Evals, guardrails, voice), build it on Amazon Bedrock, measure it against a one-prompt baseline, record the demo from a live run, check the submission",
+  "author": {
+    "name": "Logesh",
+    "url": "https://github.com/logesh4v"
+  },
+  "keywords": [
+    "strands ship",
+    "workshop to ship",
+    "set up strands ship",
+    "brainstorm",
+    "design my agent",
+    "build the agent",
+    "strands blocks",
+    "label cases",
+    "measure my agent",
+    "record the video",
+    "submission check",
+    "social good",
+    "strands harness",
+    "strands shell",
+    "strands decider"
+  ],
   "license": "Apache-2.0"
 }

@@ -1,31 +1,8 @@
 {
-  "version": "2026-10-26",
-  "note": "Every item is a short paraphrase of the cited source, checked on the version date. Add items only with a source URL and the date you checked it. The planner may cite only these ids.",
-  "sources": {
-    "OSHA-HI": "OSHA, Using the Heat Index: A Guide for Employers (risk levels and protective measures), https://www.osha.gov/heat-exposure",
-    "NWS-HI": "US National Weather Service, The Heat Index Equation, https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml",
-    "NIOSH-HRI": "CDC NIOSH, Heat-related Illnesses (updated 3 Mar 2026), https://www.cdc.gov/niosh/heat-stress/about/illnesses.html",
-    "TN-108": "Tamil Nadu 108 emergency ambulance service, run by EMRI Green Health Services under the Tamil Nadu Health Systems Project, https://www.tnhsp.org/"
-  },
+  "version": "EDIT ME",
+  "note": "EDIT ME 3: replace the example with real guidance. Every item needs a source id from 'sources', and you must have read that source on the version date.",
+  "sources": {"EXAMPLE": "EDIT ME: title, publisher, URL"},
   "items": [
-    {"id": "G-HI-LOWER", "source": "OSHA-HI", "text": "Heat index below 91 F (about 33 C): lower (caution) risk. Provide drinking water, plan ahead for hotter times, use sun protection."},
-    {"id": "G-HI-MODERATE", "source": "OSHA-HI", "text": "Heat index 91-103 F (about 33-39 C): moderate risk. Remind workers to drink water often, schedule frequent breaks in a cool shaded area, use a buddy system, acclimatize workers."},
-    {"id": "G-HI-HIGH", "source": "OSHA-HI", "text": "Heat index 103-115 F (about 39-46 C): high risk. Schedule activities when the heat index is lower, establish and enforce work/rest schedules, limit physical exertion, watch workers closely."},
-    {"id": "G-HI-EXTREME", "source": "OSHA-HI", "text": "Heat index above 115 F (about 46 C): very high to extreme risk. Reschedule non-essential activity; move essential tasks to the coolest part of the shift; strenuous work should not be done at or above 115 F."},
-    {"id": "G-HI-BUMP", "source": "OSHA-HI", "text": "Workers doing strenuous activity, wearing heavy clothing or working in direct sun need additional precautions at every risk level."},
-    {"id": "G-WATER-NEAR", "source": "OSHA-HI", "text": "Provide adequate drinking water in convenient, visible locations close to the work area."},
-    {"id": "G-WATER-4CUPS", "source": "OSHA-HI", "text": "At moderate risk and above, drink water often: about 4 cups (about 1 litre) per hour, which is about one glass every 15 minutes."},
-    {"id": "G-SHADE-BREAKS", "source": "OSHA-HI", "text": "Schedule frequent breaks in a cool, shaded area."},
-    {"id": "G-BUDDY", "source": "OSHA-HI", "text": "Set up a buddy system so workers watch each other for signs of heat-related illness."},
-    {"id": "G-ACCLIM", "source": "OSHA-HI", "text": "New and returning workers doing strenuous work may be at high risk even when the heat index is low; build up their workload gradually."},
-    {"id": "G-WORK-REST", "source": "OSHA-HI", "text": "At high risk and above, develop and enforce work/rest schedules and adjust work: reschedule, pace or rotate jobs, use cooling techniques."},
-    {"id": "G-SIGNS-STROKE", "source": "NIOSH-HRI", "text": "Heat stroke signs: confusion or slurred speech, loss of consciousness, hot dry skin or profuse sweating, seizures, very high body temperature. It can be fatal if treatment is delayed."},
-    {"id": "G-FIRSTAID-STROKE", "source": "NIOSH-HRI", "text": "Heat stroke first aid: call emergency medical care, stay with the worker, move them to a cool shaded area, remove outer clothing, cool them quickly with water, wet cloths and moving air."},
-    {"id": "G-SIGNS-EXHAUSTION", "source": "NIOSH-HRI", "text": "Heat exhaustion signs: headache, nausea, dizziness, weakness, irritability, thirst, heavy sweating, raised body temperature, less urine."},
-    {"id": "G-FIRSTAID-EXHAUSTION", "source": "NIOSH-HRI", "text": "Heat exhaustion first aid: move out of the heat, give liquids, remove unnecessary clothing, cool the head, face and neck, and get a medical evaluation."},
-    {"id": "G-SYNCOPE", "source": "NIOSH-HRI", "text": "Heat syncope (short fainting or dizziness after standing): sit or lie down in a cool place and slowly drink water."},
-    {"id": "G-CRAMPS", "source": "NIOSH-HRI", "text": "Heat cramps: drink water and have a snack or electrolyte drink every 15 to 20 minutes. Avoid salt tablets."},
-    {"id": "G-RHABDO", "source": "NIOSH-HRI", "text": "Rhabdomyolysis signs: muscle cramps or pain, dark (tea or cola coloured) urine, weakness. Stop activity, drink water and seek immediate care."},
-    {"id": "G-108", "source": "TN-108", "text": "In Tamil Nadu dial 108 for an emergency ambulance. Builders outside Tamil Nadu: check your own state's number and change NUMBER and TEXT in agent/safety.py."}
+    {"id": "G-EXAMPLE", "source": "EXAMPLE", "text": "EDIT ME: one short paraphrase of the source."}
   ]
 }

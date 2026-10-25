@@ -65,7 +65,7 @@ lines.forEach(function(l){var p=document.createElement('p');p.textContent=l;c.ap
 function nocard(){q('card').style.display='none'}
 </script></body></html>"""
 
-EVIDENCE = re.compile(r"^\[(risk|safety|critic|code|lang|plan|weather)\] (.+)$")
+EVIDENCE = re.compile(r"^\[(risk|safety|critic|code|lang|plan|weather|guard|decider|tool|tools|graph|swarm|shell|mcp|evals|session|harness|guardrail)\] (.+)$")
 
 
 def _badge(kind: str, text: str) -> tuple[str, str, str] | None:
@@ -84,7 +84,14 @@ def _badge(kind: str, text: str) -> tuple[str, str, str] | None:
         return ("info", "AMAZON TRANSLATE", text)
     if kind == "plan":
         return ("ok", "PLAN READY", text)
-    return None
+    if kind == "guard":
+        bad = any(w in text for w in ("DENY", "BROKE", "YES"))
+        return ("stop" if bad else "warn", "RULE " + text.split(":")[0][:20], text[:150])
+    if kind == "decider":
+        return ("info", "STRANDS DECIDER", text[:150])
+    if kind == "weather":
+        return None
+    return ("info", kind.upper(), text[:150])
 
 
 def _measured() -> list[str]:
